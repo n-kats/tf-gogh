@@ -11,7 +11,7 @@ def parse_args():
                       help='nin, vggのどちらか')
   parser.add_argument('--orig_img', '-i', help="入力の画像")
   parser.add_argument('--style_img', '-s', help="画風の画像")
-  parser.add_argument('--out_dir', '-o', default="tmp/output", help="生成画像の保存先")
+  parser.add_argument('--out_dir', '-o', default="output", help="生成画像の保存先")
   parser.add_argument('--iter', default=5000, type=int, help="学習回数")
   parser.add_argument('--lr', default=4.0, type=float, help="学習レート")
   parser.add_argument('--lam', default=0.005, type=float, help="入力と画風のバランス")
