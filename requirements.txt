@@ -1,0 +1,5 @@
+pip
+setuptools
+chainer
+pillow
+tensorflow-gpu

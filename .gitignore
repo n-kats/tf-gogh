@@ -1,0 +1,5 @@
+*.caffemodel
+__pycache__
+.python-version
+output
+tmp
