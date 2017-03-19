@@ -75,8 +75,8 @@ class VGG(BaseModel):
   VGGを用いた特徴量
   """
   default_caffemodel = "VGG_ILSVRC_16_layers.caffemodel"
-  default_alpha = [0, 0, 1, 1]
-  default_beta = [1, 1, 1, 1]
+  default_alpha = [0., 0., 1., 1.]
+  default_beta = [1., 1., 1., 1.]
 
   def __call__(self, x):
     y1 = Conv(self.model.conv1_2)(

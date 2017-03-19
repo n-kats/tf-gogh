@@ -1,12 +1,12 @@
+import os
+
 import numpy as np
 from PIL import Image
 import tensorflow as tf
-import os
 
 
 def transform_for_train(img):
-  img = img.transpose()[::-1].transpose()
-  return img - 120
+  return img[..., ::-1] - 120
 
 
 def load_image(path, size=None):

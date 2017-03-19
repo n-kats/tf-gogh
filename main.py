@@ -1,8 +1,9 @@
+import argparse
+import os
+
 import models
 from data import load_image
 from config import Config
-import argparse
-import os
 
 
 def parse_args():
@@ -15,7 +16,9 @@ def parse_args():
   parser.add_argument('--iter', default=5000, type=int, help="学習回数")
   parser.add_argument('--lr', default=4.0, type=float, help="学習レート")
   parser.add_argument('--lam', default=0.005, type=float, help="入力と画風のバランス")
-  parser.add_argument('--width', '-w', default=435, type=int, help="生成画像のサイズ")
+  parser.add_argument('--width', default=435, type=int, help="生成画像の横幅")
+  parser.add_argument('--height', default=435, type=int, help="生成画像の高さ")
+  parser.add_argument('--no_resize_style', action='store_true', help="画風画像をリサイズせずに使う")
 
   args = parser.parse_args()
   return args
@@ -32,8 +35,8 @@ def main():
   model = models.generate_model(args.model)
 
   # 画像サイズの修正
-  img_orig = load_image(args.orig_img, [args.width, args.width])
-  img_style = load_image(args.style_img, [args.width, args.width])
+  img_orig = load_image(args.orig_img, [args.width, args.height])
+  img_style = load_image(args.style_img, [args.width, args.height] if not config.no_resize_style else None)
 
   # 画像を生成
   generator = models.Generator(model, img_orig, img_style, config)
