@@ -12,8 +12,8 @@ chainer-goghを参考にtensorflowで書いたもの。caffemodelを読み込む
 
 ## 利用例（pyenv-virtualenvを使う例）
 ```
-git clone **
-cd **
+git clone https://github.com/n-kats/tf-gogh.git
+cd tf-gogh
 pyenv install 3.6.0
 pyenv virtualenv 3.6.0 benkyoukai
 pyenv local benkyoukai
