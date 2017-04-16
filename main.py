@@ -1,27 +1,8 @@
-import argparse
 import os
 
 import models
 from data import load_image
-from config import Config
-
-
-def parse_args():
-  parser = argparse.ArgumentParser(description='chainer-goghの真似')
-  parser.add_argument('--model', '-m', default='nin',
-                      help='nin, vggのどちらか')
-  parser.add_argument('--orig_img', '-i', help="入力の画像")
-  parser.add_argument('--style_img', '-s', help="画風の画像")
-  parser.add_argument('--out_dir', '-o', default="output", help="生成画像の保存先")
-  parser.add_argument('--iter', default=5000, type=int, help="学習回数")
-  parser.add_argument('--lr', default=4.0, type=float, help="学習レート")
-  parser.add_argument('--lam', default=0.005, type=float, help="入力と画風のバランス")
-  parser.add_argument('--width', default=435, type=int, help="生成画像の横幅")
-  parser.add_argument('--height', default=435, type=int, help="生成画像の高さ")
-  parser.add_argument('--no_resize_style', action='store_true', help="画風画像をリサイズせずに使う")
-
-  args = parser.parse_args()
-  return args
+from config import Config, parse_args
 
 
 def main():
@@ -29,18 +10,19 @@ def main():
   config = Config(args)
 
   # 出力先の作成
-  os.makedirs(args.out_dir, exist_ok=True)
+  os.makedirs(config.output_dir, exist_ok=True)
 
   # モデルの作成
-  model = models.generate_model(args.model)
+  model = models.generate_model(config.model)
 
   # 画像サイズの修正
-  img_orig = load_image(args.orig_img, [args.width, args.height])
-  img_style = load_image(args.style_img, [args.width, args.height] if not config.no_resize_style else None)
+  img_orig = load_image(config.original_image, [config.width, config.height])
+  img_style = load_image(config.style_image, [config.width, config.height] if not config.no_resize_style else None)
 
   # 画像を生成
   generator = models.Generator(model, img_orig, img_style, config)
   generator.generate(config)
+
 
 if __name__ == '__main__':
   main()

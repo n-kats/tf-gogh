@@ -2,5 +2,6 @@
 __pycache__
 .python-version
 output
+_output
 tmp
 .ipynb_checkpoints
