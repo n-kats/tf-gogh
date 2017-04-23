@@ -86,12 +86,17 @@ def generate_model(model_name, **args):
     return VGG(**args)
 
 
-# TODO: よさげにする
-def inner_product_matrix(y):
+def style_matrix(y):
+  """画風を表現する行列"""
   _, height, width, ch_num = y.get_shape().as_list()
   y_reshaped = tf.reshape(y, [-1, height * width, ch_num])
-  return tf.matmul(y_reshaped, y_reshaped, adjoint_a=True) / (height * width * ch_num)
-# TODO: version依存
+
+  if tf.__version__[0] == '1':
+    return tf.matmul(y_reshaped, y_reshaped, adjoint_a=True) / (height * width * ch_num)
+  elif tf.__version__[0] == '0':
+    return tf.batch_matmul(y_reshaped, y_reshaped, adj_x=True) / (height * width * ch_num)
+  else:
+    raise
 
 
 class Generator:
@@ -101,49 +106,54 @@ class Generator:
     mids_style = base_model(img_style)
 
     # 損失関数に使うものを作る
-    prods_style = [inner_product_matrix(y) for y in mids_style]
+    prods_style = [style_matrix(y) for y in mids_style]
 
     # img_genを初期化する
-    img_gen = tf.Variable(tf.random_uniform(config.output_shape, -20, 20))  # rank 4で無くてもいい説
+    img_gen = tf.Variable(tf.random_uniform(config.output_shape, -20, 20))
 
     self.img_gen = img_gen
     mids = base_model(img_gen)
 
-    self.loss = []
-    self.loss1 = []
-    self.loss2 = []
+    self.loss_orig = []
+    self.loss_style = []
 
-    for i, (mid, mid_orig, mid_style, prod_style, alpha, beta) in enumerate(
-        zip(mids, mids_orig, mids_style, prods_style, base_model.alpha, base_model.beta)):
-      # 損失関数の定義
-      shape1 = mid.get_shape().as_list()
-      loss1 = config.lam * tf.nn.l2_loss(mid - mid_orig) / np.prod(shape1)
-      shape2 = prod_style.get_shape().as_list()
-      loss2 = beta * tf.nn.l2_loss(inner_product_matrix(mid) - prod_style) / np.prod(shape2)
-      if alpha != 0.0:
-        loss = loss1 * alpha + loss2 / len(mids)
-      else:
-        loss = loss2 / len(mids)
-      self.loss.append(loss)
-      self.loss1.append(loss1 * alpha)
-      self.loss2.append(loss2 / len(mids))
-    self.total_loss = sum(self.loss)  # tfのを使うべき？
-    self.total_train = config.optimizer.minimize(self.total_loss)
-    clipped = tf.clip_by_value(self.img_gen, -120., 136.)
+    for mid, mid_orig in zip(mids, mids_orig):
+      shape = mid.get_shape().as_list()
+      self.loss_orig.append(tf.nn.l2_loss(mid - mid_orig) / np.prod(shape))
+
+    for mid, prod_style in zip(mids, prods_style):
+      shape = prod_style.get_shape().as_list()
+      self.loss_style.append(tf.nn.l2_loss(style_matrix(mid) - prod_style) / np.prod(shape))
+    total_loss = 0
+    for l, a in zip(self.loss_orig, base_model.alpha):
+      if a != 0:
+        total_loss += l * (a * config.lam)
+
+    for l, b in zip(self.loss_style, base_model.beta):
+      if b != 0:
+        total_loss += l * b
+
+    self.total_loss = total_loss
+    self.total_train = config.optimizer.minimize(total_loss)
+    clipped = tf.clip_by_value(self.img_gen, -120., 135.)
     self.clip = tf.assign(self.img_gen, clipped)
 
   def generate(self, config):
     with tf.Session() as sess:
-      sess.run(tf.global_variables_initializer())
+      if hasattr(tf, "global_variables_initializer"):
+        sess.run(tf.global_variables_initializer())
+      else:
+        sess.run(tf.initialize_all_variables())
+
       print("start")
       # 学習開始
       for i in range(config.iteration):
         sess.run([self.total_train, self.clip])
         if (i + 1) % 50 == 0:
-          # l, l1, l2 = sess.run([self.loss, self.loss1, self.loss2])
-          # print("%d| loss: %f, loss1: %f, loss2: %f" % (i + 1, sum(l), sum(l1), sum(l2)))
-          # for l_, l1_, l2_ in zip(l, l1, l2):
-          #   print("\tloss: %f, loss1: %f, loss2: %f" % (l_, l1_, l2_))
+          l, l1, l2 = sess.run([self.total_loss, self.loss_orig, self.loss_style])
+          print("%d| loss: %f, loss_orig: %f, loss_style: %f" % (i + 1, l, sum(l1), sum(l2)))
+          for l1_, l2_ in zip(l1, l2):
+            print("loss_orig: %f, loss_style: %f" % (l1_, l2_))
           self.save_image(sess, config.save_path % (i + 1))
 
   def save_image(self, sess, path):
