@@ -53,6 +53,7 @@ caffemodelファイルを`_py2`ディレクトリに入れてください。
 * chainer
 * pillow
 * tensorflow
+
 あとは、python3のCLIと同様です。
 
 例:
@@ -93,7 +94,7 @@ docker run -v $(pwd):/workspace --rm -it nkats/mln:20170513 \
 
 ヘルプも次のようにして見ることができます。
 ```
-docker run -v $(pwd):/workspae --rm -t nkats/mln:20170513 python3 main.py --help
+docker run -v $(pwd):/workspace --rm -t nkats/mln:20170513 python3 main.py --help
 ```
 
 #### jupyterで使う場合
