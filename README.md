@@ -2,7 +2,7 @@
 ## 概要
 学習済みモデルを使って画像の特徴を獲得し、二つの画像の特徴を混ぜた画像を作成する。
 片方の画像から画風を獲得し、それをもう片方の画像に混ぜる。
-![sample.png](https://raw.githubusercontent.com/n-kats/tf-gogh/master/images/samle.png)
+![sample.png](https://raw.githubusercontent.com/n-kats/tf-gogh/master/images/sample.png)
 
 [chainer-gogh](https://github.com/pfnet-research/chainer-gogh)を参考にtensorflowで書いたもの。caffemodelを読み込む部分でchainerのcaffemodelを読み込むものを使っているが、それ以外はtensorflow。
 
