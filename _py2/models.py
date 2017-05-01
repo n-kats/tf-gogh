@@ -71,13 +71,13 @@ class VGG(BaseModel):
   def __call__(self, x):
     u"""VGGの特徴量"""
     y1 = self.conv(u"conv1_2")(self.conv(u"conv1_1")(x), activation_fn=None)
-    x1 = pool(tf.nn.relu(y1), ksize=2, stride=2)  # max?
+    x1 = pool(tf.nn.relu(y1), ksize=2, stride=2)
 
     y2 = self.conv(u"conv2_2")(self.conv(u"conv2_1")(x1), activation_fn=None)
-    x2 = pool(tf.nn.relu(y2), ksize=2, stride=2)  # max?
+    x2 = pool(tf.nn.relu(y2), ksize=2, stride=2)
 
     y3 = self.conv(u"conv3_3")(self.conv(u"conv3_2")(self.conv(u"conv3_1")(x2)), activation_fn=None)
-    x3 = pool(tf.nn.relu(y3), ksize=2, stride=2)  # max?
+    x3 = pool(tf.nn.relu(y3), ksize=2, stride=2)
 
     y4 = self.conv(u"conv4_3")(self.conv(u"conv4_2")(self.conv(u"conv4_1")(x3)), activation_fn=None)
 

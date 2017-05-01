@@ -26,16 +26,14 @@ def parse_args():
 class Config(object):
   batch_size = 1
   iteration = 5000
-  lr = 4.0
-  lam = 0.005
+  lr = 1.0
+  lam = 0.05
   width = 300
   height = 300
   output_shape = [batch_size, height, width, 3]
   output_dir = u"_output"
   model = u"nin"
   # model = "vgg"
-  # original_image = "./tmp/cat.png"
-  # style_image = "./tmp/gogh.png"
 
   no_resize_style = False  # Trueにすると画風画像をリサイズせずに利用する（開始が遅くなる）
 
