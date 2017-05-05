@@ -3,7 +3,7 @@
 * 名前: 中西克典
 * 所属: 有限会社 来栖川電算（バイト）
 * twitter: @n_kats_
-* mastodonで遊んでいます。https://aidon.club/@n_kats_
+* mastodonで遊んでいます。(https://aidon.club/@n_kats_)
 
 ## 概要
 学習済みモデルを使って画像の特徴を獲得し、二つの画像の特徴を混ぜた画像を作成する。
